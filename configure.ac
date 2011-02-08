@@ -14,14 +14,10 @@ AM_INIT_AUTOMAKE([1.10])
 LT_PREREQ([2.2])
 LT_INIT
 
-AM_MAINTAINER_MODE
-
-
 
 dnl ############# Compiler and tools Checks
 
 AC_PROG_CC
-AC_PROG_CC_C99
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_LIBTOOL
@@ -41,18 +37,7 @@ AC_FUNC_REALLOC
 
 dnl ############## Check for packages we depend upon
 
-PKG_CHECK_MODULES(LIBUSB, libusb >= 0.0)
-
-
-dnl ############## Compiler and Linker Flags
-
-# If maintainer mode is enabled then make warnings errors
-if test "$USE_MAINTAINER_MODE" = yes; then
-  WARNING_CFLAGS="-Wall -Werror -pedantic -Wunused"
-  WARNING_CFLAGS="$WARNING_CFLAGS -Wmissing-prototypes -Wmissing-declarations"
-  AC_SUBST(WARNING_CFLAGS)
-fi
-
+PKG_CHECK_MODULES(LIBUSB, libusb-1.0 >= 1.0.8)
 
 
 dnl ############## Output files

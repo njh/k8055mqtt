@@ -38,8 +38,8 @@ fi
 rm -f config.cache config.log config.guess config.sub configure
 
 # Because GIT doesn't support empty directories
-if [ ! -d "$SRCDIR/build-scripts" ]; then
-    mkdir "$SRCDIR/build-scripts"
+if [ ! -d "$srcdir/build-scripts" ]; then
+    mkdir "$srcdir/build-scripts"
 fi
 
 echo "Generating configuration files for $package, please wait...."
@@ -55,5 +55,4 @@ automake --add-missing --force --copy
 echo "  autoconf"
 autoconf
 
-./configure --enable-maintainer-mode
-
+./configure
