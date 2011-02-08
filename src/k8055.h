@@ -22,6 +22,7 @@ int k8055_device_close(k8055_t* dev);
 
 int k8055_digital_set(k8055_t* dev, int value);
 int k8055_digital_get(k8055_t* dev);
+int k8055_digital_get_channel(k8055_t* dev, int channel);
 int k8055_digital_set_channel(k8055_t* dev, int channel);
 int k8055_digital_clear_channel(k8055_t* dev, int channel);
 

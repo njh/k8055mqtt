@@ -78,6 +78,7 @@ int k8055_device_init(k8055_t* dev)
   unsigned char command = K8055_CMD_INIT;
   int transfered = 0;
 
+  assert(dev != NULL);
   if (libusb_interrupt_transfer(dev->usb_handle, 0x1, &command, sizeof(command), &transfered, 20)) {
     printf("k8055_device_init() failed.\n");
   }
@@ -105,6 +106,8 @@ static int k8055_output_sync(k8055_t* dev)
   unsigned char data[4];
   int transfered = 0;
 
+  assert(dev != NULL);
+
   data[0] = K8055_CMD_SETOUTPUT;
   data[1] = dev->digital_output;
   data[2] = dev->analogue_outputs[0];
@@ -120,6 +123,7 @@ static int k8055_output_sync(k8055_t* dev)
 
 int k8055_digital_set(k8055_t* dev, int value)
 {
+    assert(dev != NULL);
     dev->digital_output = value;
     return k8055_output_sync(dev);
 }
@@ -127,12 +131,22 @@ int k8055_digital_set(k8055_t* dev, int value)
 
 int k8055_digital_get(k8055_t* dev)
 {
+    assert(dev != NULL);
     return dev->digital_output;
+}
+
+
+int k8055_digital_get_channel(k8055_t* dev, int channel)
+{
+    assert(dev != NULL);
+    assert(channel > 0 && channel < 9);
+    return (dev->digital_output & (0x1 << (channel-1))) ? 1 : 0;
 }
 
 
 int k8055_digital_set_channel(k8055_t* dev, int channel)
 {
+    assert(dev != NULL);
     assert(channel > 0 && channel < 9);
     dev->digital_output |= (0x1 << (channel-1));
     return k8055_output_sync(dev);
@@ -141,6 +155,7 @@ int k8055_digital_set_channel(k8055_t* dev, int channel)
 
 int k8055_digital_clear_channel(k8055_t* dev, int channel)
 {
+    assert(dev != NULL);
     assert(channel > 0 && channel < 9);
     dev->digital_output &= ~(0x1 << (channel-1));
     return k8055_output_sync(dev);
