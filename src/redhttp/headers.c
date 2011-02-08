@@ -117,6 +117,27 @@ const char *redhttp_headers_get(redhttp_header_t ** first, const char *key)
 }
 
 
+int redhttp_headers_get_index(redhttp_header_t ** first, unsigned int index, const char**key, const char** value)
+{
+  redhttp_header_t *it;
+  int i = 0;
+
+  assert(first != NULL);
+
+  for (it = *first; it; it = it->next) {
+    if (index == i) {
+      *key = it->key;
+      *value = it->value;
+      return 1;
+    }
+
+    i++;
+  }
+
+  return 0;
+}
+
+
 void redhttp_headers_parse_line(redhttp_header_t ** first, const char *input)
 {
   char *line, *ptr, *key, *value;
