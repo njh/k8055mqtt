@@ -11,9 +11,6 @@ AC_CONFIG_AUX_DIR(build-scripts)
 AC_CONFIG_MACRO_DIR(build-scripts)
 AM_INIT_AUTOMAKE([1.10])
 
-LT_PREREQ([2.2])
-LT_INIT
-
 
 dnl ############# Compiler and tools Checks
 

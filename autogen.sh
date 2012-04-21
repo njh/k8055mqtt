@@ -8,12 +8,6 @@ test -z "$srcdir" && srcdir=.
 
 cd "$srcdir"
 DIE=0
-LIBTOOLIZE=libtoolize
-
-# Check to see if we need to use the Mac OS X libtool version
-(glibtoolize --version) < /dev/null > /dev/null 2>&1 && {
-    LIBTOOLIZE=glibtoolize
-}
 
 (autoconf --version) < /dev/null > /dev/null 2>&1 || {
     echo
@@ -48,8 +42,6 @@ echo "  aclocal $ACLOCAL_FLAGS"
 aclocal $ACLOCAL_FLAGS
 echo "  autoheader"
 autoheader
-echo "  $LIBTOOLIZE --automake --force"
-$LIBTOOLIZE --force --copy --automake
 echo "  automake --add-missing"
 automake --add-missing --force --copy
 echo "  autoconf"
