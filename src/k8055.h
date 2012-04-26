@@ -1,5 +1,5 @@
-#ifndef _K8055_H_
-#define _K8055_H_
+#ifndef K8055_H
+#define K8055_H
 
 
 #define K8055_VENDOR_ID       (0x10cf)
