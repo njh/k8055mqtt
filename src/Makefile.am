@@ -1,8 +1,8 @@
 AM_CFLAGS = $(LIBUSB_CFLAGS)
 
-bin_PROGRAMS = k8055httpd test_k8055
-k8055httpd_LDADD = $(LIBUSB_LIBS)
-k8055httpd_SOURCES = k8055httpd.c k8055.c k8055.h
+bin_PROGRAMS = k8055mqtt test_k8055
+k8055mqtt_LDADD = $(LIBUSB_LIBS)
+k8055mqtt_SOURCES = k8055mqtt.c k8055.c k8055.h
 
 test_k8055_LDADD = $(LIBUSB_LIBS)
 test_k8055_SOURCES = test_k8055.c k8055.c k8055.h

@@ -1,7 +1,7 @@
-k8055httpd
-==========
+k8055mqtt
+=========
 
-Self contained HTTP server for controlling the the Velleman K8055 / VM110 Board.
+Self contained MQTT daemon for controlling the the Velleman K8055 / VM110 Board.
 
 
 Requirements
@@ -13,15 +13,14 @@ Requirements
 Examples
 --------
 
-Starting the server on port 8055:
+Starting the daemon:
 
-    ./src/k8055httpd -p 8055
+    ./src/k8055mqtt -h test.mosquitto.org
 
 Turn on digital output 1:
   
-    curl -d d1=on http://127.0.0.1:8055/outputs
+    mosqutto_pub -h test.mosquitto.org -t 'k8055/digital/1' -m 1
     
 Turn off all digital outputs:
   
-    curl -d d=0 http://127.0.0.1:8055/outputs
-
+    mosqutto_pub -h test.mosquitto.org -t 'k8055/digital' -m 0

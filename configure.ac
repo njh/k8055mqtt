@@ -4,9 +4,9 @@ AC_PREREQ(2.60)
 
 dnl ############# Initialization
 
-AC_INIT([k8055httpd], [0.1], [njh@aelius.com], k8055httpd)
+AC_INIT([k8055mqtt], [0.1], [njh@aelius.com], k8055mqtt)
 
-AC_CONFIG_SRCDIR([src/k8055httpd.c])
+AC_CONFIG_SRCDIR([src/k8055mqtt.c])
 AC_CONFIG_AUX_DIR(build-scripts)
 AC_CONFIG_MACRO_DIR(build-scripts)
 AM_INIT_AUTOMAKE([1.10])

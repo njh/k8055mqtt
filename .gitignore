@@ -23,8 +23,7 @@ Makefile
 Makefile.in
 stamp-h1
 
-src/redhttp/test_redhttpd
-src/k8055httpd
+src/k8055mqtt
 src/test_k8055
 src/config.h
 src/config.h.in

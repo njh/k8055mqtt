@@ -1,7 +1,7 @@
 #!/bin/sh
 # Run this to set up the build system: configure, makefiles, etc.
 
-package="k8055httpd"
+package="k8055mqtt"
 
 srcdir=`dirname $0`
 test -z "$srcdir" && srcdir=.
