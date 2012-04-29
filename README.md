@@ -7,8 +7,8 @@ Self contained MQTT daemon for controlling the the [Velleman] [K8055] / [VM110] 
 Requirements
 ------------
 
-  [libusb] version 1.0.8 or higher
-  [mosquitto] library version 0.14 or higher
+* [libusb] version 1.0.8 or higher
+*  [mosquitto] library version 0.14 or higher
 
 
 Usage
@@ -57,6 +57,7 @@ Credits
 -------
 
 k8055mqtt is based on [libk8055] by Sven Lindberg and Pjetur G. Hjaltason.
+
 The Mac OS X Kernel Extension is from [k8055 for Mac OS X and Linux] by Julien Etelain and Edward Nys.
 
 
