@@ -27,3 +27,4 @@ src/k8055mqtt
 src/test_k8055
 src/config.h
 src/config.h.in
+src/config.h.in~
