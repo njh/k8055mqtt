@@ -12,11 +12,11 @@
 struct k8055_s {
   libusb_context *usb_context;
   libusb_device_handle *usb_handle;
-  
+
   unsigned char card_address;
   unsigned char digital_output;
   unsigned char analogue_outputs[2];
-  
+
 };
 
 
@@ -27,11 +27,11 @@ k8055_t* k8055_device_open(int card_address)
 
   if (card_address < 0 || card_address > 4)
     return NULL;
-  
+
   dev = malloc(sizeof(k8055_t));
   if (!dev)
     return NULL;
-  
+
   // Initialise memory structure
   memset(dev, 0, sizeof(k8055_t));
 
@@ -47,7 +47,7 @@ k8055_t* k8055_device_open(int card_address)
     k8055_device_close(dev);
     return NULL;
   }
-  
+
   if (libusb_set_configuration(dev->usb_handle, 1)) {
 		fprintf(stderr, "libusb_set_configuration() error.\n");
     k8055_device_close(dev);
@@ -62,13 +62,13 @@ k8055_t* k8055_device_open(int card_address)
       return NULL;
     }
   }
-  
+
 	if (libusb_claim_interface(dev->usb_handle, K8055_INTERFACE)) {
 		fprintf(stderr, "libusb_claim_interface() error.\n");
     k8055_device_close(dev);
     return NULL;
 	}
-  
+
   return dev;
 }
 
@@ -82,7 +82,7 @@ int k8055_device_init(k8055_t* dev)
   if (libusb_interrupt_transfer(dev->usb_handle, 0x1, &command, sizeof(command), &transfered, 20)) {
     printf("k8055_device_init() failed.\n");
   }
-  
+
   return transfered;
 }
 
@@ -116,7 +116,7 @@ static int k8055_output_sync(k8055_t* dev)
   if (libusb_interrupt_transfer(dev->usb_handle, 0x1, data, sizeof(data), &transfered, 20)) {
     printf("k8055_sync_output() failed.\n");
   }
-  
+
   return transfered;
 }
 
