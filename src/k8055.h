@@ -20,11 +20,14 @@ k8055_t* k8055_device_open(int card_address);
 int k8055_device_init(k8055_t* dev);
 int k8055_device_close(k8055_t* dev);
 
-int k8055_digital_set(k8055_t* dev, int value);
-int k8055_digital_get(k8055_t* dev);
-int k8055_digital_get_channel(k8055_t* dev, int channel);
-int k8055_digital_set_channel(k8055_t* dev, int channel);
-int k8055_digital_clear_channel(k8055_t* dev, int channel);
+int k8055_digital_out_set(k8055_t* dev, int value);
+int k8055_digital_out_get(k8055_t* dev);
+int k8055_digital_out_get_channel(k8055_t* dev, int channel);
+int k8055_digital_out_set_channel(k8055_t* dev, int channel);
+int k8055_digital_out_clear_channel(k8055_t* dev, int channel);
+
+int k8055_analogue_out_set(k8055_t* dev, int channel, int value);
+int k8055_analogue_out_get(k8055_t* dev, int channel);
 
 
 #endif

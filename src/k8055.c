@@ -121,7 +121,7 @@ static int k8055_output_sync(k8055_t* dev)
 }
 
 
-int k8055_digital_set(k8055_t* dev, int value)
+int k8055_digital_out_set(k8055_t* dev, int value)
 {
     assert(dev != NULL);
     dev->digital_output = value;
@@ -129,14 +129,14 @@ int k8055_digital_set(k8055_t* dev, int value)
 }
 
 
-int k8055_digital_get(k8055_t* dev)
+int k8055_digital_out_get(k8055_t* dev)
 {
     assert(dev != NULL);
     return dev->digital_output;
 }
 
 
-int k8055_digital_get_channel(k8055_t* dev, int channel)
+int k8055_digital_out_get_channel(k8055_t* dev, int channel)
 {
     assert(dev != NULL);
     assert(channel > 0 && channel < 9);
@@ -144,7 +144,7 @@ int k8055_digital_get_channel(k8055_t* dev, int channel)
 }
 
 
-int k8055_digital_set_channel(k8055_t* dev, int channel)
+int k8055_digital_out_set_channel(k8055_t* dev, int channel)
 {
     assert(dev != NULL);
     assert(channel > 0 && channel < 9);
@@ -153,10 +153,31 @@ int k8055_digital_set_channel(k8055_t* dev, int channel)
 }
 
 
-int k8055_digital_clear_channel(k8055_t* dev, int channel)
+int k8055_digital_out_clear_channel(k8055_t* dev, int channel)
 {
     assert(dev != NULL);
     assert(channel > 0 && channel < 9);
     dev->digital_output &= ~(0x1 << (channel-1));
     return k8055_output_sync(dev);
+}
+
+int k8055_analogue_out_set(k8055_t* dev, int channel, int value)
+{
+    assert(dev != NULL);
+    if (channel == 1)
+      dev->analogue_outputs[0] = value;
+    else if (channel = 2)
+      dev->analogue_outputs[1] = value;
+    return k8055_output_sync(dev);
+}
+
+int k8055_analogue_out_get(k8055_t* dev, int channel)
+{
+    assert(dev != NULL);
+    if (channel == 1)
+      return dev->analogue_outputs[0];
+    else if (channel = 2)
+      return dev->analogue_outputs[1];
+
+    return -1;
 }
