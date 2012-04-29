@@ -23,6 +23,9 @@ Makefile
 Makefile.in
 stamp-h1
 
+macosx/k8055.xcodeproj/*.mode1v3
+macosx/k8055.xcodeproj/*.pbxuser
+
 src/k8055mqtt
 src/test_k8055
 src/config.h
