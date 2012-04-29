@@ -16,12 +16,15 @@ int main(int argc, char *params[])
   k8055_device_init(dev);
   
   for(i=1; i<=8; i++) {
-    k8055_digital_set_channel(dev, i);
+    k8055_digital_out_set_channel(dev, i);
+    k8055_device_poll(dev);
     sleep(1);
-    k8055_digital_clear_channel(dev, i);
+    k8055_digital_out_clear_channel(dev, i);
+    k8055_device_poll(dev);
   }
 
-  k8055_digital_set(dev, 0x00);
+  k8055_digital_out_set(dev, 0x00);
+  k8055_device_poll(dev);
 
   k8055_device_close(dev);
 }

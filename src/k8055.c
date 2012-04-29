@@ -16,6 +16,7 @@ struct k8055_s {
   unsigned char card_address;
   unsigned char digital_output;
   unsigned char analogue_outputs[2];
+  unsigned char write_pending;
 
 };
 
@@ -76,14 +77,18 @@ k8055_t* k8055_device_open(int card_address)
 int k8055_device_init(k8055_t* dev)
 {
   unsigned char command = K8055_CMD_INIT;
-  int transfered = 0;
+  int transferred = 0;
+  int res = 0;
 
   assert(dev != NULL);
-  if (libusb_interrupt_transfer(dev->usb_handle, 0x1, &command, sizeof(command), &transfered, 20)) {
-    printf("k8055_device_init() failed.\n");
+  
+  res = libusb_interrupt_transfer(dev->usb_handle, 0x1, &command, sizeof(command), &transferred, K8055_USB_TIMEOUT);
+  if (res == 0 && transferred == sizeof(command)) {
+    return 0;
+  } else {
+    fprintf(stderr, "k8055_device_init() failed.\n");
+    return -1;
   }
-
-  return transfered;
 }
 
 
@@ -101,31 +106,38 @@ int k8055_device_close(k8055_t* dev)
 }
 
 
-static int k8055_output_sync(k8055_t* dev)
+int k8055_device_poll(k8055_t* dev)
 {
-  unsigned char data[4];
-  int transfered = 0;
-
   assert(dev != NULL);
 
-  data[0] = K8055_CMD_SETOUTPUT;
-  data[1] = dev->digital_output;
-  data[2] = dev->analogue_outputs[0];
-  data[3] = dev->analogue_outputs[1];
-
-  if (libusb_interrupt_transfer(dev->usb_handle, 0x1, data, sizeof(data), &transfered, 20)) {
-    printf("k8055_sync_output() failed.\n");
+  // Write if anything has changed
+  if (dev->write_pending) {
+    unsigned char data[4];
+    int transferred = 0;
+    int res;
+  
+    data[0] = K8055_CMD_SETOUTPUT;
+    data[1] = dev->digital_output;
+    data[2] = dev->analogue_outputs[0];
+    data[3] = dev->analogue_outputs[1];
+  
+    res = libusb_interrupt_transfer(dev->usb_handle, 0x1, data, sizeof(data), &transferred, K8055_USB_TIMEOUT);
+    if (res == 0 && transferred == sizeof(data)) {
+      dev->write_pending = 0;
+      return 0;
+    } else {
+      fprintf(stderr, "k8055_sync_output() failed.\n");
+      return -1;
+    }
   }
-
-  return transfered;
 }
 
 
-int k8055_digital_out_set(k8055_t* dev, int value)
+void k8055_digital_out_set(k8055_t* dev, int value)
 {
     assert(dev != NULL);
     dev->digital_output = value;
-    return k8055_output_sync(dev);
+    dev->write_pending = 1;
 }
 
 
@@ -144,31 +156,31 @@ int k8055_digital_out_get_channel(k8055_t* dev, int channel)
 }
 
 
-int k8055_digital_out_set_channel(k8055_t* dev, int channel)
+void k8055_digital_out_set_channel(k8055_t* dev, int channel)
 {
     assert(dev != NULL);
     assert(channel > 0 && channel < 9);
     dev->digital_output |= (0x1 << (channel-1));
-    return k8055_output_sync(dev);
+    dev->write_pending = 1;
 }
 
 
-int k8055_digital_out_clear_channel(k8055_t* dev, int channel)
+void k8055_digital_out_clear_channel(k8055_t* dev, int channel)
 {
     assert(dev != NULL);
     assert(channel > 0 && channel < 9);
     dev->digital_output &= ~(0x1 << (channel-1));
-    return k8055_output_sync(dev);
+    dev->write_pending = 1;
 }
 
-int k8055_analogue_out_set(k8055_t* dev, int channel, int value)
+void k8055_analogue_out_set(k8055_t* dev, int channel, int value)
 {
     assert(dev != NULL);
     if (channel == 1)
       dev->analogue_outputs[0] = value;
     else if (channel = 2)
       dev->analogue_outputs[1] = value;
-    return k8055_output_sync(dev);
+    dev->write_pending = 1;
 }
 
 int k8055_analogue_out_get(k8055_t* dev, int channel)
