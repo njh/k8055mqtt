@@ -14,6 +14,14 @@ Requirements
 Usage
 -----
 
+    k8055mqtt version 0.1
+    
+    Usage: k8055mqtt [options]
+       -h <host>       the MQTT server to connect to (required)
+       -p <port>       the MQTT port to connect to (default 1883)
+       -t <prefix>     the MQTT topic prefix (default k8055)
+       -?              This help message.
+
 
 Examples
 --------
@@ -37,6 +45,7 @@ Set analogue output channel 1 to 50%:
 
 Installation
 ------------
+
 k8055mqtt uses a standard automake build process:
 
     ./configure
@@ -47,7 +56,8 @@ k8055mqtt uses a standard automake build process:
 Credits
 -------
 
-k8055mqtt is based on [k8055 for Mac OS X and Linux] by Julien Etelain and Edward Nys.
+k8055mqtt is based on [libk8055] by Sven Lindberg and Pjetur G. Hjaltason.
+The Mac OS X Kernel Extension is from [k8055 for Mac OS X and Linux] by Julien Etelain and Edward Nys.
 
 
 License
@@ -70,4 +80,5 @@ GNU General Public License for more details.
 [libusb]:                         http://libusb.org/
 [mosquitto]:                      http://mosquitto.org/
 [k8055 for Mac OS X and Linux]:   http://soft.pmad.net/k8055/
+[libk8055]:                       http://libk8055.sourceforge.net/
 [GNU General Public License]:     http://www.gnu.org/licenses/gpl.html
