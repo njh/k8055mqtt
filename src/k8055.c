@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -81,15 +82,15 @@
 struct k8055_s {
   libusb_context *usb_context;
   libusb_device_handle *usb_handle;
-  unsigned char card_address;
+  uint8_t card_address;
 
-  unsigned char digital_output;
-  unsigned char digital_input;
-  unsigned char analogue_outputs[2];
-  unsigned char analogue_inputs[2];
-  unsigned char counters[2];
+  uint8_t digital_output;
+  uint8_t digital_input;
+  uint8_t analogue_outputs[2];
+  uint8_t analogue_inputs[2];
+  uint16_t counters[2];
   
-  unsigned char write_pending;
+  uint8_t write_pending;
 };
 
 
@@ -209,8 +210,8 @@ int k8055_device_poll(k8055_t* dev)
                           ((data[0] >> 3) & 0x18));  /* Input 4 and 5 */
     dev->analogue_inputs[0] = data[2];
     dev->analogue_inputs[1] = data[3];
-    dev->counters[0] = (uint16_t)data[4];
-    dev->counters[1] = (uint16_t)data[6];
+    dev->counters[0] = ((uint16_t)data[5] << 8) | data[4];
+    dev->counters[1] = ((uint16_t)data[7] << 8) | data[6];
   } else {
     fprintf(stderr, "k8055_device_poll() failed to read.\n");
     return -1;
