@@ -12,9 +12,11 @@
 #define DEFAULT_MQTT_PORT     (1883)
 #define DEFAULT_KEEP_ALIVE    (60)
 #define DEFAULT_PREFIX        "k8055"
+#define DEFAULT_CLIENT_ID     "k8055"
 
 struct mosquitto *mosq = NULL;
 char *mqtt_prefix = DEFAULT_PREFIX;
+char *mqtt_client_id = DEFAULT_CLIENT_ID;
 int mqtt_connected = 0;
 int keep_running = 1;
 int exit_code = EXIT_SUCCESS;
@@ -116,15 +118,14 @@ static mqtt_subscribe(struct mosquitto *mosq, const char* topic)
   // FIXME: wait for acknowledgement
 }
 
-
 static struct mosquitto * mqtt_initialise(const char* host, int port)
 {
   struct mosquitto *mosq = NULL;
   char subscribe_path[MAX_TOPIC_LEN+1];
   int res = 0;
 
-  // FIXME: generate unique client id by default
-  mosq = mosquitto_new("k8055", NULL);
+  // Create a new MQTT client
+  mosq = mosquitto_new(mqtt_client_id, NULL);
   if (!mosq) {
     fprintf(stderr, "Failed to initialise MQTT client.\n");
     return NULL;
@@ -180,6 +181,7 @@ static void usage()
   printf("   -h <host>       the MQTT server to connect to (required)\n");
   printf("   -p <port>       the MQTT port to connect to (default %d)\n", DEFAULT_MQTT_PORT);
   printf("   -t <prefix>     the MQTT topic prefix (default %s)\n", DEFAULT_PREFIX);
+  printf("   -i <clientid>   the MQTT Client ID (default %s)\n", DEFAULT_CLIENT_ID);
   printf("   -?              This help message.\n");
 }
 
@@ -195,7 +197,7 @@ int main(int argc, char **argv)
   setbuf(stdout, NULL);
 
   // Parse Switches
-  while ((c = getopt(argc, argv, "h:pt:?")) != EOF) {
+  while ((c = getopt(argc, argv, "h:pt:i:?")) != EOF) {
     switch (c) {
       case 'h':
         mqtt_host = optarg;
@@ -205,6 +207,9 @@ int main(int argc, char **argv)
         break;
       case 't':
         mqtt_prefix = optarg;
+        break;
+      case 'i':
+        mqtt_client_id = optarg;
         break;
       case '?':
       default:
