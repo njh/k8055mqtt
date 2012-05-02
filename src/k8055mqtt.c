@@ -81,30 +81,37 @@ static void message_callback(void *userdata, const struct mosquitto_message *mes
     topic_len = strlen(topic);
   }
 
-  // Convert the contents of the payload into an integer
-  if (sscanf((char*)mesg->payload, "%i", &value) != 1)
-    return;
-
   // Check the topic name
   if (topic_len == 12 && strncmp(topic, "/digital/out", topic_len) == 0) {
-    printf("Setting digital to: 0x%2.2x\n", value);
-    k8055_digital_out_set(dev, value);
+    if (sscanf((char*)mesg->payload, "%i", &value) == 1) {
+      printf("Setting digital to: 0x%2.2x\n", value);
+      k8055_digital_out_set(dev, value);
+    }
   } else if (topic_len == 14 && strncmp(topic, "/digital/out/", 13) == 0) {
-    int channel = atoi(&topic[13]);
-    printf("Setting digital channel %d to: %d\n", channel, value);
-    if (value) {
-      k8055_digital_out_set_channel(dev, channel);
-    } else {
-      k8055_digital_out_clear_channel(dev, channel);
+    if (sscanf((char*)mesg->payload, "%i", &value) == 1) {
+      int channel = atoi(&topic[13]);
+      printf("Setting digital channel %d to: %d\n", channel, value);
+      if (value) {
+        k8055_digital_out_set_channel(dev, channel);
+      } else {
+        k8055_digital_out_clear_channel(dev, channel);
+      }
     }
   } else if (topic_len == 15 && strncmp(topic, "/analogue/out/", 14) == 0) {
-    int channel = atoi(&topic[14]);
-    printf("Setting analogue channel %d to: %d\n", channel, value);
-    k8055_analogue_out_set(dev, channel, value);
+    if (sscanf((char*)mesg->payload, "%i", &value) == 1) {
+      int channel = atoi(&topic[14]);
+      printf("Setting analogue channel %d to: %d\n", channel, value);
+      k8055_analogue_out_set(dev, channel, value);
+    }
+  } else if (topic_len == 10 && strncmp(topic, "/counter/", 9) == 0) {
+    if (strncmp((char*)mesg->payload, "reset", 5)==0) {
+      int channel = atoi(&topic[9]);
+      printf("Resettting counter %d\n", channel);
+      k8055_counter_reset(dev, channel);
+    }
   } else {
     printf("Unhandled message to %s: %s\n", topic, (char*)mesg->payload);
   }
-
 }
 
 
