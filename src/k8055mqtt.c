@@ -25,40 +25,20 @@ k8055_t *dev = NULL;
 
 
 
-static void connect_callback(void *obj, int result)
+static void connect_callback(struct mosquitto *mosq, void *obj, int rc)
 {
-  if(!result){
+  if(!rc){
     printf("Connected to MQTT server.\n");
     mqtt_connected = 1;
   } else {
-    switch(result) {
-      case 0x01:
-        fprintf(stderr, "Connection Refused: unacceptable protocol version\n");
-        break;
-      case 0x02:
-        fprintf(stderr, "Connection Refused: identifier rejected\n");
-        break;
-      case 0x03:
-        // FIXME: if broker is unavailable, sleep and try connecting again
-        fprintf(stderr, "Connection Refused: broker unavailable\n");
-        break;
-      case 0x04:
-        fprintf(stderr, "Connection Refused: bad user name or password\n");
-        break;
-      case 0x05:
-        fprintf(stderr, "Connection Refused: not authorised\n");
-        break;
-      default:
-        fprintf(stderr, "Connection Refused: unknown reason\n");
-        break;
-    }
-
+    const char *str = mosquitto_connack_string(rc);
+    fprintf(stderr, "Connection Refused: %s\n", str);
     mqtt_connected = 0;
   }
 }
 
 
-static void disconnect_callback(void *obj)
+static void disconnect_callback(struct mosquitto *mosq, void *obj, int rc)
 {
   mqtt_connected = 0;
 
@@ -66,7 +46,7 @@ static void disconnect_callback(void *obj)
   // FIXME: keep count of re-connects
 }
 
-static void message_callback(void *userdata, const struct mosquitto_message *mesg)
+static void message_callback(struct mosquitto *mosq, void *obj, const struct mosquitto_message *mesg)
 {
   size_t prefix_len = strlen(mqtt_prefix);
   size_t topic_len = 0;
@@ -115,11 +95,14 @@ static void message_callback(void *userdata, const struct mosquitto_message *mes
   }
 }
 
+static void log_callback(struct mosquitto *mosq, void *obj, int level, const char *str)
+{
+    printf("LOG: %s\n", str);
+}
 
 static mqtt_subscribe(struct mosquitto *mosq, const char* topic)
 {
-  uint16_t mid;
-  int res;
+  int mid, res;
 
   res = mosquitto_subscribe(mosq, &mid, topic, 0);
   // FIXME: check for success
@@ -133,23 +116,22 @@ static struct mosquitto * mqtt_initialise(const char* host, int port)
   int res = 0;
 
   // Create a new MQTT client
-  mosq = mosquitto_new(mqtt_client_id, NULL);
+  mosq = mosquitto_new(mqtt_client_id, true, NULL);
   if (!mosq) {
     fprintf(stderr, "Failed to initialise MQTT client.\n");
     return NULL;
   }
 
-  // Configure logging
-  mosquitto_log_init(mosq, MOSQ_LOG_INFO | MOSQ_LOG_WARNING | MOSQ_LOG_ERR, MOSQ_LOG_STDOUT);
-
   // FIXME: add support for username and password
 
+  // Setup callbacks
+  mosquitto_log_callback_set(mosq, log_callback);
   mosquitto_connect_callback_set(mosq, connect_callback);
   mosquitto_disconnect_callback_set(mosq, disconnect_callback);
   mosquitto_message_callback_set(mosq, message_callback);
 
   printf("Connecting to %s:%d...\n", host, port);
-  res = mosquitto_connect(mosq, host, port, DEFAULT_KEEP_ALIVE, 1);
+  res = mosquitto_connect(mosq, host, port, DEFAULT_KEEP_ALIVE);
   if (res) {
     fprintf(stderr, "Unable to connect (%d).\n", res);
     mosquitto_destroy(mosq);
@@ -159,7 +141,7 @@ static struct mosquitto * mqtt_initialise(const char* host, int port)
   // Wait until connected
   while (!mqtt_connected) {
     // FIXME: add timeout
-    int res = mosquitto_loop(mosq, 500);
+    int res = mosquitto_loop(mosq, 500, 1);
     if (res != MOSQ_ERR_SUCCESS) exit(EXIT_FAILURE);
   }
 
@@ -250,7 +232,7 @@ int main(int argc, char **argv)
 
   while (keep_running) {
     // Wait for network packets for a maximum of 0.5s
-    res = mosquitto_loop(mosq, 500);
+    res = mosquitto_loop(mosq, 500, 1);
     
     // Write output changes and poll for inputs
     k8055_device_poll(dev);
